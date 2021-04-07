@@ -1,0 +1,77 @@
+const int N=1e5+5;
+ 
+    int n,m,_;
+    int i,j,k;
+    //int a[N];
+    struct Node
+    {
+        int l,r;
+        ll sum,p,v;
+    }t[N<<5];
+    int root[N],tot=0;
+    struct O
+    {
+        int p,l,d;
+        bool operator<(O o){
+            return d<o.d;
+        }
+        void read(){ sddd(d,p,l); }
+    }a[N];
+    ll g,v;
+ 
+void update(int &x,int y,int p,int v,int l,int r)
+{
+    x=++tot;
+    t[x]=t[y];
+    t[x].sum+=(ll)p*v,t[x].v+=v,t[x].p+=p;
+    if(l==r) return ;
+    else{
+        int mid=l+r>>1;
+        if(mid>=p) update(t[x].l,t[y].l,p,v,l,mid);
+        else update(t[x].r,t[y].r,p,v,mid+1,r);
+    }
+}
+ 
+ll query(int x,int y,int l,int r,ll res)
+{
+    if(l==r) return res*l;
+    else{
+        int mid=l+r>>1;
+        ll sum=t[t[y].l].v-t[t[x].l].v;
+        ll ans=0;
+        if(sum>=res) ans+=query(t[x].l,t[y].l,l,mid,res);
+        else ans+=query(t[x].r,t[y].r,mid+1,r,res-sum)+t[t[y].l].sum-t[t[x].l].sum;
+        return ans;
+    }
+}
+ 
+bool C(int x)
+{
+    int flag=1;
+    if(t[root[n]].v-t[root[x-1]].v<v) flag=0;
+    if(query(root[x-1],root[n],1,1e5,v)>g) flag=0;
+    return flag;
+}
+ 
+int main()
+{
+    //IOS;
+    while(~sdd(n,m)){
+        forn(i,1,n) a[i].read();
+        sort(a+1,a+1+n);
+        for(int i=1;i<=n;i++) update(root[i],root[i-1],a[i].p,a[i].l,1,1e5);
+        for(int i=1;i<=m;i++){
+            int l=0,r=n,ans=-1;
+            sll(g),sll(v);
+            while(r>=l){ //d 已经排好序了，枚举主席树的下标
+                int mid=l+r>>1;
+                if(C(mid)) ans=mid,l=mid+1;
+                else r=mid-1;
+            }
+            if(ans!=-1) ans=a[ans].d;
+            pd(ans);
+        }   
+    }
+    //PAUSE;
+    return 0;
+}
